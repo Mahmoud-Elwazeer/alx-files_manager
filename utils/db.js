@@ -8,32 +8,23 @@ const url = `mongodb://${host}:${port}/${database}`;
 
 class DBClient {
   constructor() {
-    MongoClient(url, { useUnifiedTopology: true }, (err, client) => {
-      if (!err) {
-        this.db = client.db(database);
-        this.usersCollection = this.db.collection('users');
-        this.filesCollection = this.db.collection('files');
-      } else {
-        console.log(err.message);
-        this.db = false;
-      }
-    });
+    this.client = new MongoClient(url, { useUnifiedTopology: true });
+    this.client.connect();
   }
 
   isAlive() {
-    return Boolean(this.db);
+    return this.client.isConnected();
   }
 
   async nbUsers() {
-    const count = this.usersCollection.countDocuments();
-    return count;
+    return this.client.db().collection('users').countDocuments();
   }
 
   async nbFiles() {
-    const count = this.filesCollection.countDocuments();
-    return count;
+    return this.client.db().collection('files').countDocuments();
   }
 }
 
 const dbClient = new DBClient();
 module.exports = dbClient;
+// export default dbClient;
