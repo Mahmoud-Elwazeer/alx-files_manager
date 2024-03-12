@@ -11,14 +11,18 @@ function sha1(password) {
 class AuthController {
   static async getConnect(req, res) {
     const authHeader = req.header('Authorization');
-    if (!authHeader) {
+    const base64Credentials = authHeader.split(' ')[1];
+    if (!authHeader || !base64Credentials) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
-    const base64Credentials = authHeader.split(' ')[1];
     const credentials = Buffer.from(base64Credentials, 'base64').toString('ascii');
     const email = credentials.split(':')[0];
     const pass = credentials.split(':')[1];
+    if (!email || !pass) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
     const hashPass = sha1(pass);
 
     const user = await dbClient.db.collection('users').findOne({ email });
