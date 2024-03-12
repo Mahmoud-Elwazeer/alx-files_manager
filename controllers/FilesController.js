@@ -1,7 +1,11 @@
+import { promises as fsPromises } from 'fs';
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
 const ObjectId = require('mongodb').ObjectID;
+const { v4: uuidv4 } = require('uuid');
+
+const FOLDER_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 
 class FilesController {
   static async postUpload(req, res) {
@@ -17,7 +21,14 @@ class FilesController {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
-    const { name, type, data, parentId = 0, isPublic = false } = req.body;
+    const {
+      name,
+      type,
+      data,
+      parentId = 0,
+      isPublic = false,
+    } = req.body;
+
     const acceptType = ['folder', 'file', 'image'];
     if (!name) {
       res.status(400).json({ error: 'Missing name' });
@@ -59,6 +70,22 @@ class FilesController {
       isPublic,
       parentId,
     };
+    if (type !== 'folder') {
+      const filename = uuidv4();
+      // Decode the Base64 data to obtain the file content
+      const fileContent = Buffer.from(data, 'base64');
+
+      const path = `${FOLDER_PATH}/${filename}`;
+
+      try {
+        // Write the file content to the local path
+        await fsPromises.mkdir(FOLDER_PATH, { recursive: true });
+        await fsPromises.writeFile(path, fileContent);
+      } catch (err) {
+        res.status(400).json({ error: err.message });
+        return;
+      }
+    }
     res.status(201).json(out);
   }
 }
