@@ -1,4 +1,4 @@
-const redis = require('redis')
+const redis = require('redis');
 
 class RedisClient {
   constructor() {
@@ -6,8 +6,8 @@ class RedisClient {
     this.client.on('connect', () => {
       // console.log('Redis Client Connected')
     });
-    this.client.on('error', err => {
-      console.log(`Redis Client Error ${err}`)
+    this.client.on('error', (err) => {
+      console.log(`Redis Client Error ${err}`);
     });
   }
 
@@ -23,7 +23,7 @@ class RedisClient {
         } else {
           res(reply);
         }
-      })
+      });
     });
   }
 
