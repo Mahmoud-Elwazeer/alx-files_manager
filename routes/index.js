@@ -1,6 +1,7 @@
 const AppController = require('../controllers/AppController');
 const UsersController = require('../controllers/UsersController');
 const AuthController = require('../controllers/AuthController');
+const FilesController = require('../controllers/FilesController');
 
 const handleRoutes = (app) => {
   app.get('/status', AppController.getStatus);
@@ -9,6 +10,7 @@ const handleRoutes = (app) => {
   app.get('/users/me', UsersController.getMe);
   app.get('/connect', AuthController.getConnect);
   app.get('/disconnect', AuthController.getDisconnect);
+  app.post('/files', FilesController.postUpload);
 };
 
 module.exports = handleRoutes;
