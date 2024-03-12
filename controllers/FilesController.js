@@ -1,5 +1,6 @@
 import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
+
 const ObjectId = require('mongodb').ObjectID;
 
 class FilesController {
@@ -22,7 +23,7 @@ class FilesController {
       res.status(400).json({ error: 'Missing name' });
       return;
     }
-    if (!type || acceptType.includes(type)) {
+    if (!type || !acceptType.includes(type)) {
       res.status(400).json({ error: 'Missing type' });
       return;
     }
@@ -42,7 +43,23 @@ class FilesController {
         return;
       }
     }
-    res.status(200).send();
+    const newFile = {
+      userId,
+      name,
+      type,
+      isPublic,
+      parentId,
+    };
+    const createFile = await dbClient.db.collection('files').insertOne(newFile);
+    const out = {
+      id: createFile.insertedId,
+      userId,
+      name,
+      type,
+      isPublic,
+      parentId,
+    };
+    res.status(201).json(out);
   }
 }
 
