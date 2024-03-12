@@ -1,4 +1,5 @@
 const redis = require('redis');
+const util = require('util');
 
 class RedisClient {
   constructor() {
@@ -9,49 +10,29 @@ class RedisClient {
     this.client.on('error', (err) => {
       console.log(`Redis Client Error ${err}`);
     });
+
+    // Promisify the get method
+    this.getAsync = util.promisify(this.client.get).bind(this.client);
   }
 
   isAlive() {
     return this.client.connected;
   }
 
-  get(key) {
-    return new Promise((res, rej) => {
-      this.client.get(key, (err, reply) => {
-        if (err) {
-          rej(err);
-        } else {
-          res(reply);
-        }
-      });
-    });
+  async get(key) {
+    const value = await this.getAsync(key);
+    return value;
   }
 
-  set(key, value, expireInSec) {
-    return new Promise((res, rej) => {
-      this.client.set(key, value, (err, reply) => {
-        if (err) {
-          rej(err);
-        } else {
-          if (expireInSec) {
-            this.client.expire(key, expireInSec);
-          }
-          res(reply);
-        }
-      });
-    });
+  async set(key, value, expireInSec) {
+    await this.client.set(key, value);
+    if (expireInSec) {
+      this.client.expire(key, expireInSec);
+    }
   }
 
-  del(key) {
-    return new Promise((res, rej) => {
-      this.client.del(key, (err, reply) => {
-        if (err) {
-          rej(err);
-        } else {
-          res(reply);
-        }
-      });
-    });
+  async del(key) {
+    await this.client.del(key);
   }
 }
 
