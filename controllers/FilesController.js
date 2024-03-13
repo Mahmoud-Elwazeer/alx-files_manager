@@ -1,5 +1,7 @@
 const userUtils = require('../utils/user');
 const fileUtils = require('../utils/file');
+const dbClient = require('../utils/db');
+const ObjectId = require('mongodb').ObjectID;
 
 const FOLDER_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 
@@ -131,6 +133,52 @@ class FilesController {
     });
 
     res.status(200).send(fileList);
+  }
+
+  static async putPublish(req, res) {
+    const { userId } = await userUtils.getUserAndKey(req);
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const user = await userUtils.getUserById(userId);
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const { id } = req.params;
+    try {
+      const newData = { isPublic: true };
+      await fileUtils.updateFileById(id, userId, newData);
+      const getfile = await fileUtils.getFilesById(id);
+      const out = fileUtils.processFile(getfile);
+      res.status(200).json(out);
+    } catch (err) {
+      res.status(404).json({ error: err.message });
+    }
+  }
+
+  static async putUnpublish(req, res) {
+    const { userId } = await userUtils.getUserAndKey(req);
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const user = await userUtils.getUserById(userId);
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const { id } = req.params;
+    try {
+      const newData = { isPublic: false };
+      await fileUtils.updateFileById(id, userId, newData);
+      const getfile = await fileUtils.getFilesById(id);
+      const out = fileUtils.processFile(getfile);
+      res.status(200).json(out);
+    } catch (err) {
+      res.status(404).json({ error: err.message });
+    }
   }
 }
 

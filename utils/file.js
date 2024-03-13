@@ -11,6 +11,16 @@ const fileUtils = {
     const createfile = await dbClient.db.collection('files').insertOne(query);
     return createfile;
   },
+
+  async updateFileById(id, userId, newData) {
+    const objectId = new ObjectId(id);
+    const updatefile = await dbClient.db.collection('files').updateOne(
+      { _id: objectId, userId },
+      { $set: newData },
+    );
+    return updatefile;
+  },
+
   async getFile(query) {
     const file = await dbClient.db.collection('files').findOne(query);
     return file;
