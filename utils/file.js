@@ -17,6 +17,7 @@ const fileUtils = {
     const updatefile = await dbClient.db.collection('files').updateOne(
       { _id: objectId, userId },
       { $set: newData },
+      { returnOriginal: false },
     );
     return updatefile;
   },

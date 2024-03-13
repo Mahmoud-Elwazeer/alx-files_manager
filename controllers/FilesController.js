@@ -145,10 +145,19 @@ class FilesController {
       return;
     }
     const { id } = req.params;
+    if (!id) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    let getfile = await fileUtils.getFilesById(id);
+    if (!getfile) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
     try {
       const newData = { isPublic: true };
       await fileUtils.updateFileById(id, userId, newData);
-      const getfile = await fileUtils.getFilesById(id);
+      getfile = await fileUtils.getFilesById(id);
       const out = fileUtils.processFile(getfile);
       res.status(200).json(out);
     } catch (err) {
@@ -168,10 +177,19 @@ class FilesController {
       return;
     }
     const { id } = req.params;
+    if (!id) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    let getfile = await fileUtils.getFilesById(id);
+    if (!getfile) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
     try {
       const newData = { isPublic: false };
       await fileUtils.updateFileById(id, userId, newData);
-      const getfile = await fileUtils.getFilesById(id);
+      getfile = await fileUtils.getFilesById(id);
       const out = fileUtils.processFile(getfile);
       res.status(200).json(out);
     } catch (err) {
