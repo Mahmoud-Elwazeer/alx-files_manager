@@ -91,6 +91,12 @@ class FilesController {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
+
+    const user = await userUtils.getUserById(userId);
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
     // const { parentId = 0, page = 0 } = req.query;
     let parentId = req.query.parentId || '0';
     if (parentId === '0') parentId = 0;
@@ -111,7 +117,7 @@ class FilesController {
       }
     }
 
-    const listFile = fileUtils.listFile({ parentId }, page);
+    const listFile = await fileUtils.listFile({ parentId }, page);
     const fileList = [];
     await listFile.forEach((doc) => {
       const document = fileUtils.processFile(doc);

@@ -51,14 +51,25 @@ const fileUtils = {
     return out;
   },
 
-  async listFile(query, pageNumber) {
+  async listFile(query, page) {
     const files = await dbClient.db.collection('files').aggregate([
       { $match: query }, // Filter by parentId and ownerId
-      { $skip: pageNumber * ITEMS_PER_PAGE }, // Skip the appropriate number of files
+      { $skip: page * ITEMS_PER_PAGE }, // Skip the appropriate number of files
       { $limit: ITEMS_PER_PAGE }, // Limit the results to the number of items per page
     ]);
 
     return files;
+  },
+
+  processFile(doc) {
+    // Changes _id for id and removes localPath
+
+    const file = { id: doc._id, ...doc };
+
+    delete file.localPath;
+    delete file._id;
+
+    return file;
   },
 
 };
