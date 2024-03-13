@@ -1,8 +1,8 @@
 import dbClient from '../utils/db';
-import redisClient from '../utils/redis';
+import basicUtils from '../utils/basic';
 
-const ObjectId = require('mongodb').ObjectID;
 const crypto = require('crypto');
+const userUtils = require('../utils/user');
 
 function sha1(password) {
   return crypto.createHash('sha1').update(password).digest('hex');
@@ -26,20 +26,19 @@ class UsersController {
     }
     const hashPass = sha1(password);
     const newUser = { email, password: hashPass };
-    const createUser = await dbClient.db.collection('users').insertOne(newUser);
+    const createUser = await userUtils.createUser(newUser);
     const out = { id: createUser.insertedId, email };
     res.status(201).json(out);
   }
 
   static async getMe(req, res) {
-    const authHeader = req.header('X-Token');
-    if (!authHeader) {
+    const { userId } = await userUtils.getUserAndKey(req);
+    if (!basicUtils.isValidId(userId)) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
-    const userId = await redisClient.get(`auth_${authHeader}`);
-    const objectId = new ObjectId(userId);
-    const user = await dbClient.db.collection('users').findOne({ _id: objectId });
+
+    const user = await userUtils.getUserById(userId);
     if (!user) {
       res.status(401).json({ error: 'Unauthorized' });
       return;

@@ -1,6 +1,6 @@
 import { promises as fsPromises } from 'fs';
 import dbClient from '../utils/db';
-import basicUtils from '../utils/basic';
+// import basicUtils from '../utils/basic';
 
 const { v4: uuidv4 } = require('uuid');
 const userUtils = require('../utils/user');
@@ -11,7 +11,7 @@ const FOLDER_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 class FilesController {
   static async postUpload(req, res) {
     const { userId } = await userUtils.getUserAndKey(req);
-    if (!basicUtils.isValidId(userId)) {
+    if (!userId) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
