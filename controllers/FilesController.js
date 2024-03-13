@@ -102,26 +102,24 @@ class FilesController {
       return;
     }
     const { parentId = 0, page = 0 } = req.query;
-    // let parentId = req.query.parentId || '0';
-    // if (parentId === '0') parentId = 0;
-
-    // let page = Number(req.query.page) || 0;
-    // if (Number.isNaN(page)) page = 0;
 
     if (parentId !== 0 && parentId !== '0') {
       if (!parentId) {
         res.status(401).send({ error: 'Unauthorized' });
         return;
       }
+      const listFile = await fileUtils.listFile({ parentId, userId }, page);
+      const fileList = [];
+      await listFile.forEach((doc) => {
+        const document = fileUtils.processFile(doc);
+        fileList.push(document);
+      });
 
-      // const folder = await fileUtils.getFilesById(parentId);
-      // if (!folder || folder.type !== 'folder') {
-      //   res.status(200).send([]);
-      //   return;
-      // }
+      res.status(200).send(fileList);
+      return;
     }
 
-    const listFile = await fileUtils.listFile({ parentId, userId }, page);
+    const listFile = await fileUtils.listFile({ userId }, page);
     const fileList = [];
     await listFile.forEach((doc) => {
       const document = fileUtils.processFile(doc);
