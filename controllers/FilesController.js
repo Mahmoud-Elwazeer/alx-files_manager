@@ -1,22 +1,22 @@
 import { promises as fsPromises } from 'fs';
 import dbClient from '../utils/db';
-import redisClient from '../utils/redis';
+import basicUtils from '../utils/basic';
 
-const ObjectId = require('mongodb').ObjectID;
 const { v4: uuidv4 } = require('uuid');
+const userUtils = require('../utils/user');
+const fileUtils = require('../utils/file');
 
 const FOLDER_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 
 class FilesController {
   static async postUpload(req, res) {
-    const authHeader = req.header('X-Token');
-    if (!authHeader) {
-      res.status(401).json({ error: 'Unauthorized' });
+    const { userId } = await userUtils.getUserAndKey(req);
+    if (!basicUtils.isValidId(userId)) {
+      res.status(401).send({ error: 'Unauthorized' });
       return;
     }
-    const userId = await redisClient.get(`auth_${authHeader}`);
-    const objectId = new ObjectId(userId);
-    const user = await dbClient.db.collection('users').findOne({ _id: objectId });
+
+    const user = await userUtils.getUserById(userId);
     if (!user) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -43,8 +43,8 @@ class FilesController {
       return;
     }
     if (parentId) {
-      const objectIdParent = new ObjectId(parentId);
-      const parentFile = await dbClient.db.collection('files').findOne({ _id: objectIdParent });
+      const parentFile = fileUtils.getFilesById(parentId);
+
       if (!parentFile) {
         res.status(400).json({ error: 'Parent not found' });
         return;

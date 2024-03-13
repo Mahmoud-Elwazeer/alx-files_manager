@@ -11,6 +11,8 @@ const handleRoutes = (app) => {
   app.get('/connect', AuthController.getConnect);
   app.get('/disconnect', AuthController.getDisconnect);
   app.post('/files', FilesController.postUpload);
+  // app.get('/files', FilesController.getIndex);
+  // app.get('/files/:id', FilesController.getShow);
 };
 
 module.exports = handleRoutes;
