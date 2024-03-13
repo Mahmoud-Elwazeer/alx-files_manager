@@ -124,7 +124,7 @@ class FilesController {
       fileList.push(document);
     });
 
-    res.status(200).send(listFile);
+    res.status(200).send(fileList);
   }
 }
 
