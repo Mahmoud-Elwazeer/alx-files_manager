@@ -70,6 +70,10 @@ class FilesController {
       return;
     }
     const { id } = req.params;
+    if (!id) {
+      res.status(404).json({ error: 'Not found' });
+      return;
+    }
     const file = await fileUtils.getFilesById(id);
     if (!file) {
       res.status(404).json({ error: 'Not found' });
@@ -89,7 +93,7 @@ class FilesController {
 
     if (parentId !== 0 && parentId !== '0') {
       if (!parentId) {
-        res.status(401).send({ error: 'Unauthorized' });
+        res.status(404).json({ error: 'Not found' });
         return;
       }
       const listFile = await fileUtils.listFile({ parentId, userId }, page);
@@ -125,12 +129,12 @@ class FilesController {
     }
     const { id } = req.params;
     if (!id) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(404).json({ error: 'Not found' });
       return;
     }
     let getfile = await fileUtils.getFilesById(id);
     if (!getfile) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(404).json({ error: 'Not found' });
       return;
     }
     try {
@@ -140,7 +144,7 @@ class FilesController {
       const out = fileUtils.processFile(getfile);
       res.status(200).json(out);
     } catch (err) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(404).json({ error: 'Not found' });
     }
   }
 
@@ -152,12 +156,12 @@ class FilesController {
     }
     const { id } = req.params;
     if (!id) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(404).json({ error: 'Not found' });
       return;
     }
     let getfile = await fileUtils.getFilesById(id);
     if (!getfile) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(404).json({ error: 'Not found' });
       return;
     }
     try {
@@ -167,8 +171,38 @@ class FilesController {
       const out = fileUtils.processFile(getfile);
       res.status(200).json(out);
     } catch (err) {
-      res.status(401).json({ error: 'Unauthorized' });
+      res.status(404).json({ error: 'Not found' });
     }
+  }
+
+  static async getFile(req, res) {
+    const { id } = req.params;
+    if (!id) {
+      res.status(404).json({ error: 'Not found' });
+      return;
+    }
+    const getfile = await fileUtils.getFilesById(id);
+    if (!getfile) {
+      res.status(404).json({ error: 'Not found' });
+      return;
+    }
+    if (!getfile.type) {
+      const { userId, auth } = await userUtils.checkAuth(req);
+      if (!auth) {
+        res.status(404).json({ error: 'Not found' });
+        return;
+      }
+      if (userId !== getfile.userId) {
+        res.status(404).json({ error: 'Not found' });
+        return;
+      }
+      if (getfile.type === 'folder') {
+        res.status(400).json({ error: 'A folder doesn\'t have content' });
+        return;
+      }
+    }
+
+    res.status(200).json();
   }
 }
 
