@@ -12,7 +12,7 @@ class FilesController {
   static async postUpload(req, res) {
     const { userId } = await userUtils.getUserAndKey(req);
     if (!basicUtils.isValidId(userId)) {
-      res.status(401).send({ error: 'Unauthorized' });
+      res.status(401).json({ error: 'Unauthorized' });
       return;
     }
 

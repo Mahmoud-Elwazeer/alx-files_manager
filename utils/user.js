@@ -17,6 +17,11 @@ async function getUserAndKey(req) {
   return obj;
 }
 
+async function createUser(query) {
+  const createUser = await dbClient.db.collection('users').insertOne(query);
+  return createUser;
+}
+
 async function getUser(query) {
   const user = await dbClient.db.collection('users').findOne(query);
   return user;
@@ -32,6 +37,7 @@ async function getUserById(userId) {
 // export default userUtils;
 module.exports = {
   getUserAndKey,
+  createUser,
   getUser,
   getUserById,
 };

@@ -1,8 +1,8 @@
-import dbClient from '../utils/db';
 import redisClient from '../utils/redis';
 
 const crypto = require('crypto');
 const { v4: uuidv4 } = require('uuid');
+const userUtils = require('../utils/user');
 
 function sha1(password) {
   return crypto.createHash('sha1').update(password).digest('hex');
@@ -25,7 +25,7 @@ class AuthController {
     }
     const hashPass = sha1(pass);
 
-    const user = await dbClient.db.collection('users').findOne({ email });
+    const user = await userUtils.getUser({ email });
     if (!user) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
