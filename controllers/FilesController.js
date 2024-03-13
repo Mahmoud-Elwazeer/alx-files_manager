@@ -1,4 +1,4 @@
-// import mime from 'mime-types';
+import mime from 'mime-types';
 
 const userUtils = require('../utils/user');
 const fileUtils = require('../utils/file');
@@ -199,13 +199,25 @@ class FilesController {
         res.status(404).json({ error: 'Not found' });
         return;
       }
-      if (getfile.type === 'folder') {
-        res.status(400).json({ error: 'A folder doesn\'t have content' });
-        return;
-      }
     }
+    if (getfile.type === 'folder') {
+      res.status(400).json({ error: 'A folder doesn\'t have content' });
+      return;
+    }
+    if (!fileUtils.checkFileExists(getfile.localPath)) {
+      res.status(404).json({ error: 'Not found' });
+      return;
+    }
+    const { data, error } = await fileUtils.readFile(getfile.localPath);
+    if (!error) {
+      res.status(404).json({ error: 'Not found' });
+      return;
+    }
+    const mimeType = mime.contentType(getfile.name);
 
-    res.status(200).json();
+    res.setHeader('Content-Type', mimeType);
+
+    res.status(200).send(data);
   }
 }
 

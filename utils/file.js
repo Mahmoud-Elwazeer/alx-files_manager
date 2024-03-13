@@ -1,4 +1,4 @@
-import { promises as fsPromises } from 'fs';
+import { promises as fsPromises, existsSync } from 'fs';
 import dbClient from './db';
 
 const { v4: uuidv4 } = require('uuid');
@@ -68,6 +68,24 @@ const fileUtils = {
     delete file._id;
 
     return file;
+  },
+
+  async checkFileExists(path) {
+    if (existsSync(path)) {
+      return true;
+    }
+    return false;
+  },
+
+  async readFile(path) {
+    const obj = { data: null, error: null };
+    try {
+      obj.data = await fsPromises.readFile(path);
+    } catch (err) {
+      // console.log(err.message);
+      obj.error = 'Not found';
+    }
+    return obj;
   },
 
 };
