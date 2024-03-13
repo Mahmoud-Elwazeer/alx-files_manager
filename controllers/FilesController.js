@@ -86,7 +86,7 @@ class FilesController {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    const out = await fileUtils.displayFileOut(file);
+    const out = fileUtils.processFile(file);
     res.status(200).json(out);
   }
 
@@ -114,11 +114,11 @@ class FilesController {
         return;
       }
 
-      const folder = await fileUtils.getFilesById(parentId);
-      if (!folder || folder.type !== 'folder') {
-        res.status(200).send([]);
-        return;
-      }
+      // const folder = await fileUtils.getFilesById(parentId);
+      // if (!folder || folder.type !== 'folder') {
+      //   res.status(200).send([]);
+      //   return;
+      // }
     }
 
     const listFile = await fileUtils.listFile({ parentId }, page);

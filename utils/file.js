@@ -38,19 +38,6 @@ const fileUtils = {
     return { error: null };
   },
 
-  async displayFileOut(query) {
-    const file = await dbClient.db.collection('files').findOne(query);
-    const out = {
-      id: file._id,
-      userId: file.userId,
-      name: file.name,
-      type: file.type,
-      isPublic: file.isPublic,
-      parentId: file.parentId,
-    };
-    return out;
-  },
-
   async listFile(query, page) {
     const files = await dbClient.db.collection('files').aggregate([
       { $match: query }, // Filter by parentId and ownerId
