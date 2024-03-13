@@ -5,14 +5,8 @@ const FOLDER_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 
 class FilesController {
   static async postUpload(req, res) {
-    const { userId } = await userUtils.getUserAndKey(req);
-    if (!userId) {
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
-
-    const user = await userUtils.getUserById(userId);
-    if (!user) {
+    const { userId, auth } = await userUtils.checkAuth(req);
+    if (!auth) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
@@ -70,13 +64,8 @@ class FilesController {
   }
 
   static async getShow(req, res) {
-    const { userId } = await userUtils.getUserAndKey(req);
-    if (!userId) {
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
-    const user = await userUtils.getUserById(userId);
-    if (!user) {
+    const { auth } = await userUtils.checkAuth(req);
+    if (!auth) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
@@ -91,13 +80,8 @@ class FilesController {
   }
 
   static async getIndex(req, res) {
-    const { userId } = await userUtils.getUserAndKey(req);
-    if (!userId) {
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
-    const user = await userUtils.getUserById(userId);
-    if (!user) {
+    const { userId, auth } = await userUtils.checkAuth(req);
+    if (!auth) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
@@ -134,13 +118,8 @@ class FilesController {
   }
 
   static async putPublish(req, res) {
-    const { userId } = await userUtils.getUserAndKey(req);
-    if (!userId) {
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
-    const user = await userUtils.getUserById(userId);
-    if (!user) {
+    const { userId, auth } = await userUtils.checkAuth(req);
+    if (!auth) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
@@ -166,13 +145,8 @@ class FilesController {
   }
 
   static async putUnpublish(req, res) {
-    const { userId } = await userUtils.getUserAndKey(req);
-    if (!userId) {
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
-    const user = await userUtils.getUserById(userId);
-    if (!user) {
+    const { userId, auth } = await userUtils.checkAuth(req);
+    if (!auth) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }

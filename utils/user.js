@@ -30,6 +30,22 @@ const userUtils = {
     const userObj = await dbClient.db.collection('users').findOne({ _id: objectId });
     return userObj;
   },
+
+  async checkAuth(req) {
+    const obj = { userId: null, user: null, auth: false };
+    const { userId } = await this.getUserAndKey(req);
+    if (!userId) {
+      return obj;
+    }
+    const user = await this.getUserById(userId);
+    if (!user) {
+      return obj;
+    }
+    obj.userId = userId;
+    obj.user = user;
+    obj.auth = true;
+    return obj;
+  },
 };
 module.exports = userUtils;
 // export default userUtils;

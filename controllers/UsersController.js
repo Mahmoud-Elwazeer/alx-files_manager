@@ -1,5 +1,3 @@
-import basicUtils from '../utils/basic';
-
 const crypto = require('crypto');
 const userUtils = require('../utils/user');
 
@@ -31,14 +29,8 @@ class UsersController {
   }
 
   static async getMe(req, res) {
-    const { userId } = await userUtils.getUserAndKey(req);
-    if (!basicUtils.isValidId(userId)) {
-      res.status(401).json({ error: 'Unauthorized' });
-      return;
-    }
-
-    const user = await userUtils.getUserById(userId);
-    if (!user) {
+    const { userId, user, auth } = await userUtils.checkAuth(req);
+    if (!auth) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
