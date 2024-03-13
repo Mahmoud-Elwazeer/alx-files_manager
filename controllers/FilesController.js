@@ -1,3 +1,5 @@
+// import mime from 'mime-types';
+
 const userUtils = require('../utils/user');
 const fileUtils = require('../utils/file');
 
@@ -50,16 +52,17 @@ class FilesController {
       isPublic,
       parentId,
     };
-    await fileUtils.createFile(newFile);
-    const out = fileUtils.processFile(newFile);
 
     if (type !== 'folder') {
-      const { error } = await fileUtils.saveFile(FOLDER_PATH, data);
+      const { error, path } = await fileUtils.saveFile(FOLDER_PATH, data);
       if (error) {
         res.status(400).json(error);
         return;
       }
+      newFile.localPath = path;
     }
+    await fileUtils.createFile(newFile);
+    const out = fileUtils.processFile(newFile);
     res.status(201).json(out);
   }
 

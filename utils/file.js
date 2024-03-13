@@ -44,9 +44,9 @@ const fileUtils = {
       await fsPromises.mkdir(FOLDER_PATH, { recursive: true });
       await fsPromises.writeFile(path, fileContent);
     } catch (err) {
-      return ({ error: err.message });
+      return ({ error: err.message, path: null });
     }
-    return { error: null };
+    return { error: null, path };
   },
 
   async listFile(query, page) {
