@@ -4,6 +4,8 @@ import dbClient from './db';
 const { v4: uuidv4 } = require('uuid');
 const ObjectId = require('mongodb').ObjectID;
 
+const ITEMS_PER_PAGE = 20;
+
 const fileUtils = {
   async createFile(query) {
     const createfile = await dbClient.db.collection('files').insertOne(query);
@@ -48,6 +50,17 @@ const fileUtils = {
     };
     return out;
   },
+
+  async listFile(query, pageNumber) {
+    const files = await dbClient.db.collection('files').aggregate([
+      { $match: query }, // Filter by parentId and ownerId
+      { $skip: pageNumber * ITEMS_PER_PAGE }, // Skip the appropriate number of files
+      { $limit: ITEMS_PER_PAGE }, // Limit the results to the number of items per page
+    ]);
+
+    return files;
+  },
+
 };
 
 module.exports = fileUtils;
