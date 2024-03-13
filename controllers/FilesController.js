@@ -109,6 +109,10 @@ class FilesController {
         return;
       }
       const listFile = await fileUtils.listFile({ parentId, userId }, page);
+      if (!listFile || listFile.type === 'folder') {
+        res.status(200).send([]);
+        return;
+      }
       const fileList = [];
       await listFile.forEach((doc) => {
         const document = fileUtils.processFile(doc);
