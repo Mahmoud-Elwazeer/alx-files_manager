@@ -1,7 +1,5 @@
 const userUtils = require('../utils/user');
 const fileUtils = require('../utils/file');
-const dbClient = require('../utils/db');
-const ObjectId = require('mongodb').ObjectID;
 
 const FOLDER_PATH = process.env.FOLDER_PATH || '/tmp/files_manager';
 
