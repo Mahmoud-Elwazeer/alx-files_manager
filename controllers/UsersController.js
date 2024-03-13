@@ -1,4 +1,3 @@
-import dbClient from '../utils/db';
 import basicUtils from '../utils/basic';
 
 const crypto = require('crypto');
@@ -19,7 +18,7 @@ class UsersController {
       res.status(400).json({ error: 'Missing password' });
       return;
     }
-    const user = await dbClient.db.collection('users').findOne({ email });
+    const user = await userUtils.getUser({ email });
     if (user) {
       res.status(400).json({ error: 'Already exist' });
       return;

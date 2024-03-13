@@ -43,7 +43,7 @@ class FilesController {
       return;
     }
     if (parentId) {
-      const parentFile = fileUtils.getFilesById(parentId);
+      const parentFile = await fileUtils.getFilesById(parentId);
 
       if (!parentFile) {
         res.status(400).json({ error: 'Parent not found' });
@@ -61,7 +61,7 @@ class FilesController {
       isPublic,
       parentId,
     };
-    const createFile = await dbClient.db.collection('files').insertOne(newFile);
+    const createFile = await fileUtils.createFile(newFile);
     const out = {
       id: createFile.insertedId,
       userId,

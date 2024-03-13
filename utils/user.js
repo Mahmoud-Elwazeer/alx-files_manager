@@ -18,8 +18,8 @@ async function getUserAndKey(req) {
 }
 
 async function createUser(query) {
-  const createUser = await dbClient.db.collection('users').insertOne(query);
-  return createUser;
+  const createuser = await dbClient.db.collection('users').insertOne(query);
+  return createuser;
 }
 
 async function getUser(query) {
