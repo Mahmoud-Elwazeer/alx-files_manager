@@ -1,8 +1,7 @@
-import { promises as fsPromises } from 'fs';
-import dbClient from '../utils/db';
+// import { promises as fsPromises } from 'fs';
 // import basicUtils from '../utils/basic';
 
-const { v4: uuidv4 } = require('uuid');
+// const { v4: uuidv4 } = require('uuid');
 const userUtils = require('../utils/user');
 const fileUtils = require('../utils/file');
 
@@ -71,18 +70,23 @@ class FilesController {
       parentId,
     };
     if (type !== 'folder') {
-      const filename = uuidv4();
-      // Decode the Base64 data to obtain the file content
-      const fileContent = Buffer.from(data, 'base64');
+      // const filename = uuidv4();
+      // // Decode the Base64 data to obtain the file content
+      // const fileContent = Buffer.from(data, 'base64');
 
-      const path = `${FOLDER_PATH}/${filename}`;
+      // const path = `${FOLDER_PATH}/${filename}`;
 
-      try {
-        // Write the file content to the local path
-        await fsPromises.mkdir(FOLDER_PATH, { recursive: true });
-        await fsPromises.writeFile(path, fileContent);
-      } catch (err) {
-        res.status(400).json({ error: err.message });
+      // try {
+      //   // Write the file content to the local path
+      //   await fsPromises.mkdir(FOLDER_PATH, { recursive: true });
+      //   await fsPromises.writeFile(path, fileContent);
+      // } catch (err) {
+      //   res.status(400).json({ error: err.message });
+      //   return;
+      // }
+      const { error } = await fileUtils.saveFile(FOLDER_PATH, data);
+      if (error) {
+        res.status(400).json(error);
         return;
       }
     }
