@@ -75,6 +75,11 @@ class FilesController {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
+    const user = await userUtils.getUserById(userId);
+    if (!user) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
     const { id } = req.params;
     const file = await fileUtils.getFilesById(id);
     if (!file) {
@@ -91,18 +96,17 @@ class FilesController {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
-
     const user = await userUtils.getUserById(userId);
     if (!user) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
     }
-    // const { parentId = 0, page = 0 } = req.query;
-    let parentId = req.query.parentId || '0';
-    if (parentId === '0') parentId = 0;
+    const { parentId = 0, page = 0 } = req.query;
+    // let parentId = req.query.parentId || '0';
+    // if (parentId === '0') parentId = 0;
 
-    let page = Number(req.query.page) || 0;
-    if (Number.isNaN(page)) page = 0;
+    // let page = Number(req.query.page) || 0;
+    // if (Number.isNaN(page)) page = 0;
 
     if (parentId !== 0 && parentId !== '0') {
       if (!parentId) {
