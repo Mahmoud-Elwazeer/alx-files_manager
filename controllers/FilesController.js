@@ -1,7 +1,3 @@
-// import { promises as fsPromises } from 'fs';
-// import basicUtils from '../utils/basic';
-
-// const { v4: uuidv4 } = require('uuid');
 const userUtils = require('../utils/user');
 const fileUtils = require('../utils/file');
 
@@ -60,30 +56,10 @@ class FilesController {
       isPublic,
       parentId,
     };
-    const createFile = await fileUtils.createFile(newFile);
-    const out = {
-      id: createFile.insertedId,
-      userId,
-      name,
-      type,
-      isPublic,
-      parentId,
-    };
+    await fileUtils.createFile(newFile);
+    const out = await fileUtils.displayFileOut(newFile);
+
     if (type !== 'folder') {
-      // const filename = uuidv4();
-      // // Decode the Base64 data to obtain the file content
-      // const fileContent = Buffer.from(data, 'base64');
-
-      // const path = `${FOLDER_PATH}/${filename}`;
-
-      // try {
-      //   // Write the file content to the local path
-      //   await fsPromises.mkdir(FOLDER_PATH, { recursive: true });
-      //   await fsPromises.writeFile(path, fileContent);
-      // } catch (err) {
-      //   res.status(400).json({ error: err.message });
-      //   return;
-      // }
       const { error } = await fileUtils.saveFile(FOLDER_PATH, data);
       if (error) {
         res.status(400).json(error);
@@ -91,6 +67,22 @@ class FilesController {
       }
     }
     res.status(201).json(out);
+  }
+
+  static async getShow(req, res) {
+    const { userId } = await userUtils.getUserAndKey(req);
+    if (!userId) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+    const { id } = req.params;
+    const file = await fileUtils.getFilesById(id);
+    if (!file) {
+      res.status(404).json({ error: 'Not found' });
+      return;
+    }
+    const out = await fileUtils.displayFileOut(file);
+    res.status(200).json(out);
   }
 }
 
