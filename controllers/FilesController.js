@@ -57,7 +57,7 @@ class FilesController {
       parentId,
     };
     await fileUtils.createFile(newFile);
-    const out = await fileUtils.displayFileOut(newFile);
+    const out = fileUtils.processFile(newFile);
 
     if (type !== 'folder') {
       const { error } = await fileUtils.saveFile(FOLDER_PATH, data);
@@ -121,7 +121,7 @@ class FilesController {
       // }
     }
 
-    const listFile = await fileUtils.listFile({ parentId }, page);
+    const listFile = await fileUtils.listFile({ parentId, userId }, page);
     const fileList = [];
     await listFile.forEach((doc) => {
       const document = fileUtils.processFile(doc);
