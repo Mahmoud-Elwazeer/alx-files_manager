@@ -140,7 +140,7 @@ class FilesController {
       const out = fileUtils.processFile(getfile);
       res.status(200).json(out);
     } catch (err) {
-      res.status(404).json({ error: err.message });
+      res.status(401).json({ error: 'Unauthorized' });
     }
   }
 
@@ -167,7 +167,7 @@ class FilesController {
       const out = fileUtils.processFile(getfile);
       res.status(200).json(out);
     } catch (err) {
-      res.status(404).json({ error: err.message });
+      res.status(401).json({ error: 'Unauthorized' });
     }
   }
 }
