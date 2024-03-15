@@ -79,7 +79,11 @@ class FilesController {
     }
     let file;
     try {
-      file = await fileUtils.getFilesByIdAndUser(id, userId);
+      file = await fileUtils.getFilesById(id);
+      if (file.userId !== userId) {
+        res.status(404).json({ error: 'Not found' });
+        return;
+      }
     } catch (err) {
       res.status(404).json({ error: 'Not found' });
       return;
