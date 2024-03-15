@@ -34,7 +34,7 @@ class FilesController {
       return;
     }
     if (parentId) {
-      const parentFile = await fileUtils.getFilesById(parentId, userId);
+      const parentFile = await fileUtils.getFilesById(parentId);
 
       if (!parentFile) {
         res.status(400).json({ error: 'Parent not found' });
@@ -77,8 +77,10 @@ class FilesController {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    const file = await fileUtils.getFilesById(id, userId);
-    if (!file) {
+    let file;
+    try {
+      file = await fileUtils.getFilesByIdAndUser(id, userId);
+    } catch (err) {
       res.status(404).json({ error: 'Not found' });
       return;
     }
@@ -135,16 +137,18 @@ class FilesController {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    let getfile = await fileUtils.getFilesById(id, userId);
-    if (!getfile) {
+    let file;
+    try {
+      file = await fileUtils.getFilesByIdAndUser(id, userId);
+    } catch (err) {
       res.status(404).json({ error: 'Not found' });
       return;
     }
     try {
       const newData = { isPublic: true };
       await fileUtils.updateFileById(id, userId, newData);
-      getfile = await fileUtils.getFilesById(id, userId);
-      const out = fileUtils.processFile(getfile);
+      file = await fileUtils.getFilesById(id);
+      const out = fileUtils.processFile(file);
       res.status(200).json(out);
     } catch (err) {
       res.status(404).json({ error: 'Not found' });
@@ -162,16 +166,18 @@ class FilesController {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    let getfile = await fileUtils.getFilesById(id, userId);
-    if (!getfile) {
+    let file;
+    try {
+      file = await fileUtils.getFilesByIdAndUser(id, userId);
+    } catch (err) {
       res.status(404).json({ error: 'Not found' });
       return;
     }
     try {
       const newData = { isPublic: false };
       await fileUtils.updateFileById(id, userId, newData);
-      getfile = await fileUtils.getFilesById(id, userId);
-      const out = fileUtils.processFile(getfile);
+      file = await fileUtils.getFilesByIdAndUser(id, userId);
+      const out = fileUtils.processFile(file);
       res.status(200).json(out);
     } catch (err) {
       res.status(404).json({ error: 'Not found' });
@@ -185,35 +191,37 @@ class FilesController {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    const getfile = await fileUtils.getFilesById(id, userId);
-    if (!getfile) {
+    let file;
+    try {
+      file = await fileUtils.getFilesByIdAndUser(id, userId);
+    } catch (err) {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    if (!getfile.type) {
+    if (!file.type) {
       if (!auth) {
         res.status(404).json({ error: 'Not found' });
         return;
       }
-      if (userId !== getfile.userId) {
+      if (userId !== file.userId) {
         res.status(404).json({ error: 'Not found' });
         return;
       }
     }
-    if (getfile.type === 'folder') {
+    if (file.type === 'folder') {
       res.status(400).json({ error: 'A folder doesn\'t have content' });
       return;
     }
-    if (!fileUtils.checkFileExists(getfile.localPath)) {
+    if (!fileUtils.checkFileExists(file.localPath)) {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    const { data, error } = await fileUtils.readFile(getfile.localPath);
+    const { data, error } = await fileUtils.readFile(file.localPath);
     if (!error) {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    const mimeType = mime.contentType(getfile.name);
+    const mimeType = mime.contentType(file.name);
 
     res.setHeader('Content-Type', mimeType);
 
