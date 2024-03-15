@@ -34,7 +34,7 @@ class FilesController {
       return;
     }
     if (parentId) {
-      const parentFile = await fileUtils.getFilesById(parentId);
+      const parentFile = await fileUtils.getFilesById(parentId, userId);
 
       if (!parentFile) {
         res.status(400).json({ error: 'Parent not found' });
@@ -67,7 +67,7 @@ class FilesController {
   }
 
   static async getShow(req, res) {
-    const { auth } = await userUtils.checkAuth(req);
+    const { userId, auth } = await userUtils.checkAuth(req);
     if (!auth) {
       res.status(401).json({ error: 'Unauthorized' });
       return;
@@ -77,7 +77,7 @@ class FilesController {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    const file = await fileUtils.getFilesById(id);
+    const file = await fileUtils.getFilesById(id, userId);
     if (!file) {
       res.status(404).json({ error: 'Not found' });
       return;
@@ -135,7 +135,7 @@ class FilesController {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    let getfile = await fileUtils.getFilesById(id);
+    let getfile = await fileUtils.getFilesById(id, userId);
     if (!getfile) {
       res.status(404).json({ error: 'Not found' });
       return;
@@ -143,7 +143,7 @@ class FilesController {
     try {
       const newData = { isPublic: true };
       await fileUtils.updateFileById(id, userId, newData);
-      getfile = await fileUtils.getFilesById(id);
+      getfile = await fileUtils.getFilesById(id, userId);
       const out = fileUtils.processFile(getfile);
       res.status(200).json(out);
     } catch (err) {
@@ -162,7 +162,7 @@ class FilesController {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    let getfile = await fileUtils.getFilesById(id);
+    let getfile = await fileUtils.getFilesById(id, userId);
     if (!getfile) {
       res.status(404).json({ error: 'Not found' });
       return;
@@ -170,7 +170,7 @@ class FilesController {
     try {
       const newData = { isPublic: false };
       await fileUtils.updateFileById(id, userId, newData);
-      getfile = await fileUtils.getFilesById(id);
+      getfile = await fileUtils.getFilesById(id, userId);
       const out = fileUtils.processFile(getfile);
       res.status(200).json(out);
     } catch (err) {
@@ -179,18 +179,18 @@ class FilesController {
   }
 
   static async getFile(req, res) {
+    const { userId, auth } = await userUtils.checkAuth(req);
     const { id } = req.params;
     if (!id) {
       res.status(404).json({ error: 'Not found' });
       return;
     }
-    const getfile = await fileUtils.getFilesById(id);
+    const getfile = await fileUtils.getFilesById(id, userId);
     if (!getfile) {
       res.status(404).json({ error: 'Not found' });
       return;
     }
     if (!getfile.type) {
-      const { userId, auth } = await userUtils.checkAuth(req);
       if (!auth) {
         res.status(404).json({ error: 'Not found' });
         return;

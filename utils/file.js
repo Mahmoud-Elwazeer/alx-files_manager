@@ -26,9 +26,9 @@ const fileUtils = {
     const file = await dbClient.db.collection('files').findOne(query);
     return file;
   },
-  async getFilesById(id) {
+  async getFilesById(id, userId) {
     const objectId = new ObjectId(id);
-    const file = await dbClient.db.collection('files').findOne({ _id: objectId });
+    const file = await dbClient.db.collection('files').findOne({ _id: objectId, userId });
     return file;
   },
 
