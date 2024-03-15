@@ -105,18 +105,25 @@ class FilesController {
         res.status(404).json({ error: 'Not found' });
         return;
       }
-      const listFile = await fileUtils.listFile({ parentId, userId }, page);
-      if (!listFile || listFile.type === 'folder') {
-        res.status(200).send([]);
+      let file;
+      try {
+        file = await fileUtils.getFilesById(parentId);
+      } catch (err) {
+        res.status(404).json({ error: 'Not found' });
         return;
       }
-      const fileList = [];
-      await listFile.forEach((doc) => {
-        const document = fileUtils.processFile(doc);
-        fileList.push(document);
-      });
+      // const listFile = await fileUtils.listFile({ parentId, userId }, page);
+      // if (!listFile || listFile.type === 'folder') {
+      //   res.status(200).send([]);
+      //   return;
+      // }
+      // const fileList = [];
+      // await listFile.forEach((doc) => {
+      //   const document = fileUtils.processFile(doc);
+      //   fileList.push(document);
+      // });
 
-      res.status(200).send(fileList);
+      res.status(200).send(file);
       return;
     }
 
